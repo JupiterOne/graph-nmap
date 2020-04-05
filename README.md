@@ -16,7 +16,7 @@ how to deploy the project on a live system.
 * J1 API Key
 * Nmap installed locally
 
-### Installing
+### Usage
 
 Export the following environment variables (or store locally in a `.env` file):
 
@@ -46,4 +46,13 @@ Then run:
 1. `cat local/{filename}.xml | yarn ts-node ./src/index.ts`
 
 1. The newly created entities are of class `Host` and can be found through the
-   query `Find nmap_discovered_host`.
+   J1QL query `Find nmap_discovered_host`.
+
+   Example output on JupiterOne:
+
+   ![example.png](images/example.png)
+
+### Examples
+
+An example Nmap output file is included in `test/nmap-out.xml`. The converted
+`test/nmap-out.json` file is for reference purpose only.

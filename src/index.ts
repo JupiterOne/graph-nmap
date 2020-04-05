@@ -7,7 +7,7 @@ import pThrottle from 'p-throttle';
 import { NmapOutput } from '../types/nmap';
 import { toHostEntities } from './converter';
 
-const DEFAULT_THROTTLE = 2500;
+const DEFAULT_THROTTLE = 4000;
 
 function gatherConfig () {
   const config = {
@@ -76,8 +76,9 @@ async function createEntities(j1Client: any, entities: any) {
       e.properties
     );
     
+    const entityId = res.vertex.entity._id;
+
     if (e._rawData) {
-      const entityId = res.vertex.entity._id;
       await j1Client.upsertEntityRawData(
         entityId, 
         'default', 
@@ -85,10 +86,13 @@ async function createEntities(j1Client: any, entities: any) {
         e._rawData
       );
     }
+
+    return entityId;
   }, 1, DEFAULT_THROTTLE);
   
   for (const e of entities) {
-    await throttled(e);
+    const entityId = await throttled(e);
+    console.log(`Created entity ${entityId}.`);
   }
 
   console.log("Finished creating entities in JupiterOne.");

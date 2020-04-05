@@ -55,7 +55,6 @@ export function toHostEntities(data: NmapOutput) {
       };
 
       entities.push(entity);
-      console.log(JSON.stringify(entity, null, 2));
     }
     catch (err) {
       console.log('Error processing host. Skipping to next.');

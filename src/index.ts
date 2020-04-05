@@ -7,7 +7,11 @@ import pThrottle from 'p-throttle';
 import { NmapOutput } from '../types/nmap';
 import { toHostEntities } from './converter';
 
+// throttle to stay within API rate limit
 const DEFAULT_THROTTLE = 4000;
+
+// for debugging use; script will not push entities to J1 in debug mode
+const DEBUG = false;
 
 function gatherConfig () {
   const config = {
@@ -38,6 +42,11 @@ async function ingestData(data: any) {
 
   try {
     const json: NmapOutput = await parser.parseStringPromise(data);
+
+    if (DEBUG) {
+      console.log(JSON.stringify(json, null, 2));
+    }
+
     if (json) {
       const newEntities = toHostEntities(json);
       await createEntities(j1Client, newEntities);
@@ -65,6 +74,10 @@ async function run () {
 }
 
 async function createEntities(j1Client: any, entities: any) {
+  if (DEBUG) {
+    return;
+  }
+
   const throttled = pThrottle(async (e: any) => {
     const classLabels = Array.isArray(e.entityClass)
       ? e.entityClass

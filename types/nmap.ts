@@ -89,7 +89,7 @@ export interface NmapPorts {
       count: string; // should parse to number
     };
   };
-  port: NmapPort[];
+  port?: NmapPort | NmapPort[];
 }
 
 export interface NmapPort {

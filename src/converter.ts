@@ -58,6 +58,7 @@ export function toHostEntities(data: NmapOutput) {
     }
     catch (err) {
       console.log('Error processing host. Skipping to next.');
+      console.log({ err });
       continue;
     }
   }
@@ -103,12 +104,22 @@ function processPorts(ports: NmapPorts | undefined) {
   }
   
   const openPorts: NmapPort[] = [];
-  ports.port.forEach(p => {
-    const state = typeof p.state === 'string' ? p.state : p.state.state;
+  if (Array.isArray(ports.port)) {
+    ports.port.forEach(p => {
+      const state = typeof p.state === 'string' ? p.state : p.state.state;
+      if (state === 'open') {
+        openPorts.push(p);
+      }
+    });
+  }
+  else if (ports.port) {
+    const state = typeof ports.port.state === 'string' 
+      ? ports.port.state 
+      : ports.port.state.state;
     if (state === 'open') {
-      openPorts.push(p);
+      openPorts.push(ports.port);
     }
-  })
+  }
 
   return {
     openPorts: openPorts.map(p => p.portid).map(p => parseInt(p)),

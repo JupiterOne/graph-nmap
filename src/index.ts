@@ -13,6 +13,10 @@ const DEFAULT_THROTTLE = 4000;
 // for debugging use; script will not push entities to J1 in debug mode
 const DEBUG = false;
 
+// Set the DEFAULT_GATEWAY value to an IP Address (e.g. '192.168.1.1') will add
+// a `defaultGateway` property to each discovered host entity.
+const DEFAULT_GATEWAY = null;
+
 function gatherConfig () {
   const config = {
     j1AccessToken: process.env.J1_ACCESS_TOKEN,
@@ -49,6 +53,17 @@ async function ingestData(data: any) {
 
     if (json) {
       const newEntities = toHostEntities(json);
+      newEntities.forEach(entity => {
+        if (DEFAULT_GATEWAY) {
+          if (entity.properties.ipAddress === DEFAULT_GATEWAY) {
+            entity.entityClass = ['Host', 'Gateway'];
+          } else {
+            Object.assign(entity.properties, {
+              defaultGateway: DEFAULT_GATEWAY,
+            });
+          };
+        }
+      });
       await createEntities(j1Client, newEntities);
     }
   }

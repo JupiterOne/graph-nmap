@@ -49,7 +49,7 @@ export function toHostEntities(data: NmapOutput) {
       const entity = {
         entityKey: `nmap:${hostname}:${addresses.macAddress}:${addresses.ipAddress}`,
         entityType: 'nmap_discovered_host',
-        entityClass: 'Host',
+        entityClass: ['Host'],
         properties: entityProperties,
         _rawData: host,
       };

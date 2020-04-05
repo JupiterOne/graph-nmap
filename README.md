@@ -48,9 +48,11 @@ Then run:
 1. The newly created entities are of class `Host` and can be found through the
    J1QL query `Find nmap_discovered_host`.
 
-   Example output on JupiterOne:
+   Here are two example output screenshots from JupiterOne:
 
-   ![example.png](images/example.png)
+   ![example1.png](images/example1.png)
+
+   ![example2.png](images/example2.png)
 
 ### Examples
 

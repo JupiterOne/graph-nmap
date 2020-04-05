@@ -1,13 +1,12 @@
 # graph-nmap
 
-This is a local/unmanaged integration that scans vulnerability reports from
-[Vuls.io](https://vuls.io) scans and ingests the findings into JupiterOne (J1).
+This is a local/unmanaged integration that processes discovered hosts from
+[Nmap](https://nmap.org/) scans and ingests the findings into JupiterOne (J1).
 
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your
-local machine for development and testing purposes. See deployment for notes on
-how to deploy the project on a live system.
+local machine for development and testing purposes.
 
 ### Prerequisites
 

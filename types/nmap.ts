@@ -127,7 +127,7 @@ export interface NmapOSClass {
 
 export interface NmapOSMatch {
   name: string; // e.g. "Linux 2.6.39"
-  accuracy: string; // should parse to number
+  accuracy: string; // accuracy score (0-100); should parse to number
   line: string; // should parse to number
   osclass?: NmapOSClass; 
 }
@@ -141,7 +141,7 @@ export interface NmapService {
   devicetype?: string; // e.g. "router"
   tunnel?: string; // e.g. "ssl"
   method: string; // e.g. "probed"
-  conf: string; // should parse to number
+  conf: string; // confidence score (0-10); should parse to number
   cpe: string | string[]
 }
 

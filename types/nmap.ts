@@ -139,7 +139,7 @@ export interface NmapService {
   extrainfo?: string;
   ostype?: string;
   devicetype?: string; // e.g. "router"
-  tunnel?: string; // e.g. "router"
+  tunnel?: string; // e.g. "ssl"
   method: string; // e.g. "probed"
   conf: string; // should parse to number
   cpe: string | string[]

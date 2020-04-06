@@ -18,6 +18,25 @@ export function toHostEntities(data: NmapOutput) {
         continue;
       }
 
+      const entityClass = ['Host'];
+      const deviceType = getDeviceType(host.ports);
+      
+      // https://nmap.org/book/osdetect-device-types.html
+      if (deviceType) {
+        if (deviceType.match(/balancer|bridge|router|proxy/i)) {
+          entityClass.push('Gateway');
+        }
+        else if (deviceType.match(/firewall/i)) {
+          entityClass.push('Firewall');
+        }
+        else if (deviceType.match(/print/i)) {
+          entityClass.push('Printer');
+        }
+        else if (deviceType.match(/phone|device/i)) {
+          entityClass.push('Device');
+        }
+      }
+
       let hostname;
       let aliases;
       if (typeof host.hostnames === 'string') {
@@ -42,14 +61,22 @@ export function toHostEntities(data: NmapOutput) {
         hostname,
         aliases,
         status,
-        displayName: hostname || addresses.ipAddress || addresses.macAddress,
+        deviceType,
         active: status === 'up',
       }
+
+      entityProperties.displayName = 
+        hostname || 
+        entityProperties.afpServerName || 
+        entityProperties.serverName || 
+        entityProperties.netbiosName ||
+        addresses.ipAddress || 
+        addresses.macAddress;
 
       const entity = {
         entityKey: `nmap:${hostname}:${addresses.macAddress}:${addresses.ipAddress}`,
         entityType: 'nmap_discovered_host',
-        entityClass: ['Host'],
+        entityClass,
         properties: entityProperties,
         _rawData: host,
       };
@@ -98,17 +125,32 @@ function processAddresses(addresses: NmapAddress | NmapAddress[] | undefined) {
   };
 }
 
+function getDeviceType(ports: NmapPorts | undefined) {
+  if (ports?.port) {
+    for (const port of (Array.isArray(ports.port) ? ports.port : [ports.port])) {
+      if (port.service?.devicetype) {
+        return port.service.devicetype;
+      }
+    }
+  }
+}
+
+const REGEX_AFPSERVER = /afpserver\/([\w,.@-]+)/i;
+const REGEX_SERVER_NAME = /Server Name: ((?!true|false)[\w,.-]+)/i;
+const REGEX_MACHINE_TYPE = /Machine Type: ([\w,.-]+)/i;
+const REGEX_NETBIOS_NAME = /NetBIOS Name: ([\w.-]+)/i;
+
 function processPorts(ports: NmapPorts | undefined) {
   if (!ports) {
     return {};
   }
   
-  const openPorts: NmapPort[] = [];
+  const openPortsList: NmapPort[] = [];
   if (Array.isArray(ports.port)) {
     ports.port.forEach(p => {
       const state = typeof p.state === 'string' ? p.state : p.state.state;
       if (state === 'open') {
-        openPorts.push(p);
+        openPortsList.push(p);
       }
     });
   }
@@ -117,13 +159,39 @@ function processPorts(ports: NmapPorts | undefined) {
       ? ports.port.state 
       : ports.port.state.state;
     if (state === 'open') {
-      openPorts.push(ports.port);
+      openPortsList.push(ports.port);
     }
   }
 
+  const openPorts: number[] = [];
+  const services: string[] = [];
+  const additionalDetails: any = {};
+  openPortsList.forEach(p => {
+    openPorts.push(parseInt(p.portid));
+
+    if (p.service) {
+      services.push(p.service.name);
+
+      if (p.script?.id === 'afp-serverinfo') {
+        const matchAfpServer = p.script?.output.match(REGEX_AFPSERVER);
+        const matchServerName = p.script?.output.match(REGEX_SERVER_NAME);
+        const matchMachineType = p.script?.output.match(REGEX_MACHINE_TYPE);
+
+        additionalDetails.afpServerName = matchAfpServer && matchAfpServer[1];
+        additionalDetails.serverName = matchServerName && matchServerName[1];
+        additionalDetails.machineType = matchMachineType && matchMachineType[1];
+      }
+      else if (p.script?.id === 'nbstat') {
+        const matchNetBiosName = p.script?.output.match(REGEX_NETBIOS_NAME);
+        additionalDetails.netbiosName = matchNetBiosName && matchNetBiosName[1];
+      }
+    }
+  });
+
   return {
-    openPorts: openPorts.map(p => p.portid).map(p => parseInt(p)),
-    services: openPorts.map(p => p.service?.name),
+    openPorts,
+    services,
+    ...additionalDetails
   };
 }
 
@@ -132,9 +200,18 @@ function processOsDetails(os: NmapOS | undefined) {
     return {};
   }
 
+  let ports;
+  if (Array.isArray(os.portused)) {
+    ports = os.portused.map(p => p.portid).map(p => parseInt(p));
+  }
+  else if (os.portused) {
+    ports = [parseInt(os.portused.portid)];
+  }
+
   return {
     platform: os.osclass?.osfamily.toLowerCase(),
-    osName: os.osmatch?.name,
-    ports: os.portused?.map(p => p.portid).map(p => parseInt(p)),
+    osName: !Array.isArray(os.osmatch) && os.osmatch?.name,
+    ports,
+    type: os.osclass?.type,
   }
 } 

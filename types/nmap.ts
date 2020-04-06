@@ -62,6 +62,9 @@ export interface NmapHost {
   distance?: {
     value: string; // should parse to number
   };
+  hostscript?: {
+    script: NmapScript | NmapScript[];
+  };
   tcpsequence?: NmapSequence;
   ipidsequence?: NmapSequence;
   tcptssequence?: NmapSequence;
@@ -93,8 +96,9 @@ export interface NmapPorts {
 }
 
 export interface NmapPort {
-  protocol: string;
   portid: string; // should parse to number
+  protocol?: string;
+  proto?: string
   state: string | NmapPortState;
   service?: NmapService;
   script?: NmapScript | NmapScript;
@@ -107,20 +111,25 @@ export interface NmapPortState {
 }
 
 export interface NmapOS {
-  portused?: NmapPort[],
-  osclass?: {
-    type: string; // e.g. "general purpose"
-    vendor: string; // e.g. "Linux"
-    osfamily: string; // e.g. "Linux"
-    osgen: string;  // e.g. "2.6.X"
-    accuracy: string; // should parse to number
-    cpe: string | string[];
-  },
-  osmatch?: {
-    name: string; // e.g. "Linux 2.6.39"
-    accuracy: string; // should parse to number
-    line: string; // should parse to number
-  }
+  portused?: NmapPort | NmapPort[],
+  osclass?: NmapOSClass;
+  osmatch?: NmapOSMatch | NmapOSMatch[]
+}
+
+export interface NmapOSClass {
+  type: string; // e.g. "general purpose"
+  vendor: string; // e.g. "Linux"
+  osfamily: string; // e.g. "Linux"
+  osgen: string;  // e.g. "2.6.X"
+  accuracy: string; // should parse to number
+  cpe: string | string[];
+}
+
+export interface NmapOSMatch {
+  name: string; // e.g. "Linux 2.6.39"
+  accuracy: string; // accuracy score (0-100); should parse to number
+  line: string; // should parse to number
+  osclass?: NmapOSClass; 
 }
 
 export interface NmapService {
@@ -129,8 +138,10 @@ export interface NmapService {
   version?: string;
   extrainfo?: string;
   ostype?: string;
-  method: string;
-  conf: string; // should parse to number
+  devicetype?: string; // e.g. "router"
+  tunnel?: string; // e.g. "ssl"
+  method: string; // e.g. "probed"
+  conf: string; // confidence score (0-10); should parse to number
   cpe: string | string[]
 }
 

@@ -1,4 +1,5 @@
 import 'dotenv/config';
+process.env.JUPITERONE_RUNTIME_ENVIRONMENT='LOCAL';
 
 import JupiterOneClient from '@jupiterone/jupiterone-client-nodejs';
 import * as xml2js from 'xml2js';
@@ -35,11 +36,11 @@ function gatherConfig () {
 
 async function ingestData(data: any) {
   const config = gatherConfig();
-  const j1Client = 
+  const j1Client =
     await new JupiterOneClient({
-      account: config.j1Account as string, 
-      accessToken: config.j1AccessToken, 
-      dev: (config.dev === 'true') 
+      account: config.j1Account as string,
+      accessToken: config.j1AccessToken,
+      dev: (config.dev === 'true')
     }).init();
 
   const parser = new xml2js.Parser({ mergeAttrs: true, explicitArray: false });
@@ -103,21 +104,21 @@ async function createEntities(j1Client: any, entities: any) {
       classLabels,
       e.properties
     );
-    
+
     const entityId = res.vertex.entity._id;
 
     if (e._rawData) {
       await j1Client.upsertEntityRawData(
-        entityId, 
-        'default', 
-        'application/json', 
+        entityId,
+        'default',
+        'application/json',
         e._rawData
       );
     }
 
     return entityId;
   }, 1, DEFAULT_THROTTLE);
-  
+
   for (const e of entities) {
     const entityId = await throttled(e);
     console.log(`Created entity ${entityId}.`);

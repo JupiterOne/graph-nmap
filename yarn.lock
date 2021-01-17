@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@jupiterone/jupiter-managed-integration-sdk@^33.6.0":
-  version "33.6.0"
-  resolved "https://registry.yarnpkg.com/@jupiterone/jupiter-managed-integration-sdk/-/jupiter-managed-integration-sdk-33.6.0.tgz#dc25f4027caaf48f5ebf3273dbd352207e3cb8e5"
-  integrity sha512-XieN0SfewsASY1UpQm8U8KZvZhR+CUx3Y/50JeDyiGbA6I7iVtiuUIhewr+eIbrnlh0gBC/OQFSTq4KiS7oJQw==
+"@jupiterone/jupiter-managed-integration-sdk@^36.0.0":
+  version "36.0.0"
+  resolved "https://registry.yarnpkg.com/@jupiterone/jupiter-managed-integration-sdk/-/jupiter-managed-integration-sdk-36.0.0.tgz#ae3849f256a773e53a5f889ddffdf076ac8806e9"
+  integrity sha512-AVjQtcpEbS+BgC5xKaYDKWoCb5RjaeU+Z2WB2WjJL+lYo5WQj675LfKh7KRrN+m+5OQv0oLX92/ZfcqznHJnHg==
 
 "@jupiterone/jupiterone-alert-rules@^0.3.0":
   version "0.3.0"

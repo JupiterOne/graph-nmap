@@ -1,4 +1,4 @@
-import { DataModel } from "@jupiterone/jupiter-managed-integration-sdk";
+import { isPublicIp } from "@jupiterone/integration-sdk-core";
 import { NmapOutput, NmapHost, NmapPorts, NmapOS, NmapAddress, NmapPort } from "../types/nmap";
 
 export function toHostEntities(data: NmapOutput) {
@@ -110,7 +110,7 @@ function processAddresses(addresses: NmapAddress | NmapAddress[] | undefined) {
       }
     }
     else {
-      if (DataModel.ipUtil.isPublicIp(address.addr)) {
+      if (isPublicIp(address.addr)) {
         isPublic = true;
       }
       ipAddress.push(address.addr);

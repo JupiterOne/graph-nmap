@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@jupiterone/jupiter-managed-integration-sdk": "^33.6.0",
+    "@jupiterone/integration-sdk-core": "^6.10.0",
     "@jupiterone/jupiterone-client-nodejs": "^0.21.1",
     "dotenv": "^8.2.0",
     "p-throttle": "^3.1.0",
